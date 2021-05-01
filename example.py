@@ -11,31 +11,27 @@ from src.model import FederatedSGDClassifier
 from sklearn.datasets import load_iris
 
 
-SERVER = '192.168.1.17:9092'
+SERVER = 'Atlas:9092'
 
 if __name__ =='__main__':
     data = load_iris(return_X_y=True)
-    model = FederatedSGDClassifier(n_classes=3, n_features=4)
-    """
+    model1 = FederatedSGDClassifier(n_classes=3, n_features=4)
+    model2 = FederatedSGDClassifier(n_classes=3, n_features=4)
     client = Client(
         dataset=data,
         groupid='client.001',
-        model=model,
+        model=model1,
         server=SERVER
     )
     
     server = Server(
-        n_clients=2,
-        groupid='server',
-        model=model,
+        n_clients=1,
+        groupid='server.001',
+        model=model2,
         server=SERVER
     )
     server.initialize()
-    client.run_once()
-    """
-    model.set_weights(model.generate_weights())
-    X, y = data
-    model.run_training_epoch(X, y)
+    client.run()
 
     #th1 = threading.Thread(target=client.run, daemon=True)
     #th1.start()

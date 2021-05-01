@@ -54,8 +54,17 @@ class Server:
         payload = self.prepare_payload(
             weights=self.model.generate_weights(),
             metrics=None,
-            state='RUN',
+            state='START',
             epoch=0
+        )
+        self.send(payload)
+    
+    def simulate(self, state, epoch):
+        payload = self.prepare_payload(
+            weights=self.model.generate_weights(),
+            metrics=None,
+            state=state,
+            epoch=epoch
         )
         self.send(payload)
 

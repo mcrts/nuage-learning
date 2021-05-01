@@ -4,7 +4,7 @@ import time
 from confluent_kafka import Consumer, Producer, KafkaException
 
 
-from src.utils import deserialize_payload, serialize_payload
+from src.utils import deserialize_payload, serialize_payload, logger
 
 
 class Client:
@@ -44,7 +44,7 @@ class Client:
                 print("Consumer error: {}".format(msg.error()))
                 continue
             break
-        consumer.close()
+        consumer.commit()
         return msg.value().decode('utf-8')
 
     def send(self, payload):
@@ -82,8 +82,6 @@ class Client:
         if 'weights' not in message:
             raise KeyError('No <weights> key in message', message)
         weights = message['weights']
-        print(weights)
-        print(message)
         self.model.set_weights(weights)
 
     def evaluate(self):
@@ -101,18 +99,17 @@ class Client:
     def run_once(self):
         message = self.fetch()
         message = self.deserialize_message(message)
-        #print(message)
-
+        logger.info(message)
         self.set_weights(message)
-        print('weights')
-        print(self.get_weights())
-        self.train()
-        return
 
         if self.get_state(message) == "STOP":
             running = False
         else:
-            metrics = self.evaluate()
+            if self.get_state(message) == "START":
+                metrics = None
+            else:
+                metrics = self.evaluate()
+
             self.train()
             weights = self.get_weights()
             payload = self.prepare_payload(
@@ -122,7 +119,7 @@ class Client:
                 self.get_state(message),
                 self.get_epoch(message)
             )
-            self.send(payload)
+            #self.send(payload)
             running = True
         return running
 
@@ -130,3 +127,4 @@ class Client:
         running = True
         while running:
             running = self.run_once()
+            time.sleep(1)

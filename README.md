@@ -42,8 +42,8 @@ log.dirs = /opt/kafka_2.12-2.8.0/data/kafka
 #2. Start kafka
 
 ```shell
-kafka-server-start.sh /opt/kafka_2.12-2.8.0/config/server.properties
 zookeeper-server-start.sh /opt/kafka_2.12-2.8.0/config/zookeeper.properties
+kafka-server-start.sh /opt/kafka_2.12-2.8.0/config/server.properties
 ```
 
 #3. Install conduktor (Kafka GUI)
