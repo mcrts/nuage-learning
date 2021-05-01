@@ -71,7 +71,7 @@ class FederatedSGDClassifier(FederatedModel):
             get_weights = lambda size: rng.normal(size=size).astype(np.float32)
         else:
             get_weights = lambda size: np.zeros(shape=size, dtype=np.float32)
-        weights = {'coef_': get_weights((self.n_features,))}
+        weights = {'coef_': get_weights((self.n_features, self.n_classes))}
         if self.model.fit_intercept:
             weights['intercept_'] = get_weights((self.n_classes,))
         return weights
@@ -88,3 +88,13 @@ class FederatedSGDClassifier(FederatedModel):
             y, self.model.predict_proba(X), sample_weight=sample_weight
         )
         return {'accuracy': accuracy, 'logloss': logloss, 'nsamples': len(y)}
+
+    def aggregate_weights(self, dataset_sizes, partial_weights):
+        total = sum(dataset_sizes)
+        data = (dataset_sizes, partial_weights)
+        coef = np.sum([n * w['coef_'] for n, w in zip(data)], axis=0)
+        weights = {'coef': coef / total}
+        if self.model.fit_intercept:
+            bias = np.sum([n * w['intercept_'] for n, w in zip(data)], axis=0)
+            weights['intercept_'] = bias / total
+        return weights
