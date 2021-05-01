@@ -71,7 +71,9 @@ class FederatedSGDClassifier(FederatedModel):
             get_weights = lambda size: rng.normal(size=size).astype(np.float32)
         else:
             get_weights = lambda size: np.zeros(shape=size, dtype=np.float32)
+
         weights = {'coef_': get_weights((self.n_features, self.n_classes))}
+
         if self.model.fit_intercept:
             weights['intercept_'] = get_weights((self.n_classes,))
         return weights
