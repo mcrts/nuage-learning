@@ -2,6 +2,7 @@
 
 """Docstring."""
 
+import time
 
 import numpy as np
 from confluent_kafka import Consumer, Producer
@@ -51,12 +52,17 @@ class Server:
 
     def initialize(self):
         payload = self.prepare_payload(
-            weights=np.array([0., 0., 0., 0.]),
-            metrics=np.zeros((3,)),
+            weights=self.model.generate_weights(),
+            metrics=None,
             state='RUN',
             epoch=0
         )
         self.send(payload)
+
+    def fetch(self):
+        consumer = self.get_consumer([self.readtopic])
+        messages = consumer.consume(self.n_clients)
+        return [msg.value() for msg in messages]
 
     def run(self):
         pass
