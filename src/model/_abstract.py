@@ -29,6 +29,18 @@ class FederatedModel(metaclass=ABCMeta):
         return NotImplemented
 
     @abstractmethod
+    def generate_weights(self, random=True, seed=None):
+        """Return zero-valued or random weights that match the model's specs.
+
+        random : bool, whether to generate random weights (drawn from a
+                 normal distribution) rather than zero-valued ones
+        seed   : optional int, seed to the RNG used if 'random' is True
+
+        Return a dict associating numpy arrays of weights to string keys.
+        """
+        return NotImplemented
+
+    @abstractmethod
     def run_training_epoch(self, X, y, sample_weight=None):
         """Train the model on a given dataset for one epoch."""
         return NotImplemented
