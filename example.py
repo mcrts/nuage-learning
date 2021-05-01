@@ -3,17 +3,16 @@
 import threading
 import time
 
-
-
 from client import Client
-import config
+
+SERVER = '192.168.1.17:9092'
 
 if __name__ =='__main__':
     client = Client(
         dataset='mydata',
         groupid='groupid',
         model='model',
-        server=config.SERVER
+        server=SERVER
     )
 
     th1 = threading.Thread(target=client.run, daemon=True)
