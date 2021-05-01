@@ -49,3 +49,19 @@ class FederatedModel(metaclass=ABCMeta):
     def evaluate(self, X, y, sample_weight=None):
         """Evaluate the model on a given dataset."""
         return NotImplemented
+
+    @abstractmethod
+    def aggregate_weights(self, dataset_sizes, partial_weights):
+        """Aggregate partial weights from similar models.
+
+        dataset_sizes   : list of int, sizes of the partial datasets
+        partial_weights : list of dict associating numpy arrays to
+                          str keys, weights of the models that need
+                          aggregating (obtained from `get_weights`)
+
+        Note that this instance's weights will *not* be automatically
+        added to the input ones.
+
+        Return a dict that may be fed to `self.set_weights`.
+        """
+        return NotImplemented
