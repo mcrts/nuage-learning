@@ -62,7 +62,7 @@ class FederatedSGDClassifier(metaclass=ABCMeta):
         self.model.coef_ = weights['coef_']
         if self.model.fit_intercept:
             if 'intercept_' not in weights:
-                raise KeyError("Missng 'weights' key: 'intercept_'")
+                raise KeyError("Missing 'weights' key: 'intercept_'")
             self.model.intercept_ = weights['intercept_']
 
     @abstractmethod

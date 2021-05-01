@@ -3,6 +3,7 @@ import time
 
 from confluent_kafka import Consumer, KafkaException
 
+
 class Client:
     readtopic = "read_topic"
     sendtopic = "send_topic"
