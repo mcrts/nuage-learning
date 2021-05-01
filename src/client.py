@@ -15,8 +15,7 @@ class Client:
         self.model = model
         self.server = server
     
-    
-    def get_comsumer(self, topics):
+    def get_consumer(self, topics):
         c = Consumer({
             'bootstrap.servers': self.server,
             'group.id': self.groupid,
@@ -27,9 +26,8 @@ class Client:
         return c
 
     def fetch(self):
+        consumer = self.get_consumer([self.readtopic])
         while True:
-            time.sleep(1)
-            consumer = self.get_comsumer([self.readtopic])
             msg = consumer.poll(1.0)
             if msg is None:
                 continue
@@ -38,8 +36,8 @@ class Client:
                 continue
 
             print(self.groupid, '| Received', '| message: {}'.format(msg.value().decode('utf-8')))
-            consumer.close()
             break
+        consumer.close()
         return msg.value()
 
     def run(self):
