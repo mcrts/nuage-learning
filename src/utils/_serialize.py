@@ -8,6 +8,8 @@ adding support for numpy arrays and scalar types.
 
 import json
 
+import numpy as np
+
 
 def serialize_payload(payload):
     """Serialize a payload to a JSON string."""
