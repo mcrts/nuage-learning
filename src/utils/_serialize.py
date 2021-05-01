@@ -39,8 +39,8 @@ def _unpack(obj):
         return obj
     if objtype == 'np.ndarray':
         data, dtype, shape = obj['value']
-        return np.frombuffer(bytes.fromhex(data), dtype=dtype).reshape(shape)
+        return np.fromstring(bytes.fromhex(data), dtype=dtype).reshape(shape)
     if objtype == 'np.generic':
         data, dtype = obj['value']
-        return np.frombuffer(bytes.fromhex(data), dtype=dtype)[0]
+        return np.fromstring(bytes.fromhex(data), dtype=dtype)[0]
     return obj
