@@ -4,6 +4,9 @@ import time
 from confluent_kafka import Consumer, Producer, KafkaException
 
 
+from src.utils import deserialize_payload, serialize_payload
+
+
 class Client:
     readtopic = "server"
     sendtopic = "clients"
@@ -28,7 +31,6 @@ class Client:
     def get_producer(self):
         p = Producer({
             'bootstrap.servers': self.server,
-            'session.timeout.ms': self.session_time_out,
         })
         return p
 
@@ -42,15 +44,19 @@ class Client:
                 print("Consumer error: {}".format(msg.error()))
                 continue
 
-            print(self.groupid, '| Received', '| message: {}'.format(msg.value().decode('utf-8')))
+            #print(self.groupid, '| Received', '| message: {}'.format(msg.value()))
             break
         consumer.close()
-        return msg.value()
+        return msg.value().decode('utf-8')
 
     def send(self, payload):
         producer = self.get_producer()
         producer.produce(self.sendtopic, payload)
         producer.flush()
+    
+    def deserialize_message(self, message):
+        message = deserialize_payload(message)
+        return message
 
     def prepare_payload(self, weights, metrics, dataset_size, state, epoch):
         data = {
@@ -61,7 +67,7 @@ class Client:
             'epoch': epoch,
             'client_id': self.groupid
         }
-        payload = self.serialize(data)
+        payload = serialize_payload(data)
         return payload
 
     def set_weights(self, message):
@@ -72,6 +78,11 @@ class Client:
             raise KeyError('No <state> key in message', message)
         return message['state']
 
+    def get_epoch(self, message):
+        if 'epoch' not in message:
+            raise KeyError('No <epoch> key in message', message)
+        return message['epoch']
+
     def evaluate(self):
         return []
 
@@ -81,25 +92,31 @@ class Client:
     def get_weights(self):
         return []
 
+    def run_once(self):
+        message = self.fetch()
+        message = self.deserialize_message(message)
+        print(message)
+
+        self.set_weights(message)
+
+        if self.get_state(message) == "STOP":
+            running = False
+        else:
+            metrics = self.evaluate()
+            self.train()
+            weights = self.get_weights()
+            payload = self.prepare_payload(
+                weights,
+                metrics,
+                len(self.dataset[1]),
+                self.get_state(message),
+                self.get_epoch(message)
+            )
+            self.send(payload)
+            running = True
+        return running
+
     def run(self):
         running = True
         while running:
-            message = self.fetch()
-            print(message)
-
-            self.set_weights(message)
-
-            if self.get_state(message) == "STOP":
-                running = False
-            else:
-                metrics = self.evaluate()
-                self.train()
-                weights = self.get_weights()
-                payload = self.prepare_payload(
-                    weights,
-                    metrics,
-                    len(self.dataset),
-                    self.get_state(message),
-                    epoch
-                )
-                self.send(payload)
+            running = self.run_once()
