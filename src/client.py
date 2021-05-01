@@ -14,7 +14,7 @@ class Client:
         self.groupid = groupid
         self.model = model
         self.server = server
-    
+
     def get_consumer(self, topics):
         c = Consumer({
             'bootstrap.servers': self.server,
@@ -46,24 +46,24 @@ class Client:
             break
         consumer.close()
         return msg.value()
-    
+
     def send(self, payload):
         producer = self.get_producer()
         producer.produce(self.sendtopic, payload)
         producer.flush()
-    
+
     def prepare_payload(self, weights, metrics, dataset_size, state, epoch):
         data = {
             'weights': weights,
             'metrics': metrics,
-            'dataset_size': dataset_size
+            'dataset_size': dataset_size,
             'state': state,
             'epoch': epoch,
             'client_id': self.groupid
         }
         payload = self.serialize(data)
         return payload
-    
+
     def set_weights(self, message):
         pass
 
@@ -71,7 +71,7 @@ class Client:
         if 'state' not in message:
             raise KeyError('No <state> key in message', message)
         return message['state']
-    
+
     def evaluate(self):
         return []
 
