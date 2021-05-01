@@ -43,8 +43,6 @@ class Client:
             if msg.error():
                 print("Consumer error: {}".format(msg.error()))
                 continue
-
-            #print(self.groupid, '| Received', '| message: {}'.format(msg.value()))
             break
         consumer.close()
         return msg.value().decode('utf-8')
@@ -70,9 +68,6 @@ class Client:
         payload = serialize_payload(data)
         return payload
 
-    def set_weights(self, message):
-        pass
-
     def get_state(self, message):
         if 'state' not in message:
             raise KeyError('No <state> key in message', message)
@@ -83,21 +78,36 @@ class Client:
             raise KeyError('No <epoch> key in message', message)
         return message['epoch']
 
+    def set_weights(self, message):
+        if 'weights' not in message:
+            raise KeyError('No <weights> key in message', message)
+        weights = message['weights']
+        print(weights)
+        print(message)
+        self.model.set_weights(weights)
+
     def evaluate(self):
-        return []
+        X, y = self.dataset
+        metrics = self.model.evaluate(X, y)
+        return metrics
 
     def train(self):
-        pass
+        X, y = self.dataset
+        self.model.run_training_epoch(X, y)
 
     def get_weights(self):
-        return []
+        return self.model.get_weights()
 
     def run_once(self):
         message = self.fetch()
         message = self.deserialize_message(message)
-        print(message)
+        #print(message)
 
         self.set_weights(message)
+        print('weights')
+        print(self.get_weights())
+        self.train()
+        return
 
         if self.get_state(message) == "STOP":
             running = False
