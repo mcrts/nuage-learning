@@ -16,6 +16,7 @@ SERVER = '192.168.1.17:9092'
 if __name__ =='__main__':
     data = load_iris(return_X_y=True)
     model = FederatedSGDClassifier(n_classes=3, n_features=4)
+    """
     client = Client(
         dataset=data,
         groupid='client.001',
@@ -30,8 +31,12 @@ if __name__ =='__main__':
         server=SERVER
     )
     server.initialize()
-
     client.run_once()
+    """
+    model.set_weights(model.generate_weights())
+    X, y = data
+    model.run_training_epoch(X, y)
+
     #th1 = threading.Thread(target=client.run, daemon=True)
     #th1.start()
     #time.sleep(10)
