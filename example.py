@@ -3,7 +3,7 @@
 import threading
 import time
 
-from client import Client
+from src.client import Client
 
 SERVER = '192.168.1.17:9092'
 
