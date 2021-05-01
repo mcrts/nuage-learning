@@ -36,14 +36,7 @@ class Client:
 
     def fetch(self):
         consumer = self.get_consumer([self.readtopic])
-        while True:
-            msg = consumer.poll(1.0)
-            if msg is None:
-                continue
-            if msg.error():
-                print("Consumer error: {}".format(msg.error()))
-                continue
-            break
+        msg = consumer.consume(1)[0]
         consumer.commit()
         return msg.value().decode('utf-8')
 
@@ -99,11 +92,10 @@ class Client:
     def run_once(self):
         message = self.fetch()
         message = self.deserialize_message(message)
-        logger.info(message)
         self.set_weights(message)
 
         if self.get_state(message) == "STOP":
-            running = False
+            pass
         else:
             if self.get_state(message) == "START":
                 metrics = None
@@ -119,12 +111,13 @@ class Client:
                 self.get_state(message),
                 self.get_epoch(message)
             )
-            #self.send(payload)
-            running = True
-        return running
+            self.send(payload)
+        
+        keep_running = bool(self.get_state(message) != 'STOP')
+        return keep_running
+
 
     def run(self):
-        running = True
-        while running:
-            running = self.run_once()
-            time.sleep(1)
+        keep_running = True
+        while keep_running:
+            keep_running = self.run_once()

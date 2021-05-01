@@ -92,10 +92,10 @@ class FederatedSGDClassifier(FederatedModel):
     def aggregate_weights(self, dataset_sizes, partial_weights):
         total = sum(dataset_sizes)
         data = (dataset_sizes, partial_weights)
-        coef = np.sum([n * w['coef_'] for n, w in zip(data)], axis=0)
-        weights = {'coef': coef / total}
+        coef = np.sum([n * w['coef_'] for n, w in zip(*data)], axis=0)
+        weights = {'coef_': coef / total}
         if self.model.fit_intercept:
-            bias = np.sum([n * w['intercept_'] for n, w in zip(data)], axis=0)
+            bias = np.sum([n * w['intercept_'] for n, w in zip(*data)], axis=0)
             weights['intercept_'] = bias / total
         return weights
 
