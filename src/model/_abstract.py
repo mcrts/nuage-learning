@@ -65,3 +65,13 @@ class FederatedModel(metaclass=ABCMeta):
         Return a dict that may be fed to `self.set_weights`.
         """
         return NotImplemented
+
+    @abstractmethod
+    def aggregate_metrics(self, partial_metrics):
+        """Aggregate partial weights from similar models.
+
+        partial_metrics : list of dict output by models' `evaluate` method
+
+        Return a dict containing aggregated metrics.
+        """
+        return NotImplemented
