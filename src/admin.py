@@ -35,4 +35,5 @@ class Admin:
     
     def setup_server(self):
         self.clear()
+        time.sleep(2)
         self.initialize()
