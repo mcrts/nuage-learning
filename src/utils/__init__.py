@@ -3,4 +3,4 @@
 """Utility functions."""
 
 from ._serialize import deserialize_payload, serialize_payload
-from ._logger import logger
+from ._logger import logger, get_logger
