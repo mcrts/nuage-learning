@@ -1,4 +1,21 @@
-#1. Install Apache-Kafka
+# Todo List
+* Make an example with multiprocessing (just to make sure it works)
+* Make an example with a kafka cloud instance (will probably need some work)
+* Package the project
+* CLI design
+* Tweak FederatedSGDClassifier 's API
+
+# Acknowledgment
+* Yannick Bourrier
+* Paul Andrey
+* Alexandre Filiot
+* Martin Courtois
+
+# Setup Kafka
+<details>
+  <summary>Installing, configuring and running Apache-Kafka</summary>
+
+## 1. Install Apache-Kafka
 
 java8 is required
 ```shell
@@ -39,16 +56,21 @@ Update /opt/kafka_2.12-2.8.0/config/zookeeperproperties
 log.dirs = /opt/kafka_2.12-2.8.0/data/kafka
 ```
 
-#2. Start kafka
+## 2. Start kafka
 
 ```shell
 zookeeper-server-start.sh /opt/kafka_2.12-2.8.0/config/zookeeper.properties
 kafka-server-start.sh /opt/kafka_2.12-2.8.0/config/server.properties
 ```
 
-#3. Install conduktor (Kafka GUI)
+## 3. Install conduktor (Kafka GUI)
 
 ```shell
 wget https://releases.conduktor.io/linux-deb
 dpkg -i Conduktor-2.13.1.deb
 ```
+
+  ```javascript
+  console.log("I'm a code block!");
+  ```
+</details>
