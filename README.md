@@ -6,7 +6,7 @@
 * Tweak FederatedSGDClassifier 's API
 
 # Acknowledgment
-* Yannick Bourrier
+* Yannick Bouillard
 * Paul Andrey
 * Alexandre Filiot
 * Martin Courtois
