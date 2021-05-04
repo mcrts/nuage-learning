@@ -11,7 +11,7 @@ from src.model import FederatedSGDClassifier
 from src.utils import get_logger
 
 from sklearn.datasets import load_iris
-from sklearn.utils import resample
+from sklearn.utils import resample, shuffle
 
 
 LOGGER = get_logger('Example kafka thread')
@@ -65,7 +65,8 @@ def loop_example(loops=10, n_clients=10):
     admin.setup_server()
 
     X, y = load_iris(return_X_y=True)
-    X, y = resample(X, y, n_samples=n_clients * 100)
+    #X, y = resample(X, y, n_samples=n_clients * 50)
+    X, y = shuffle(X, y)
     datasets = list(zip(np.split(X, n_clients), np.split(y, n_clients)))
 
     # Initialize Clients
@@ -73,7 +74,7 @@ def loop_example(loops=10, n_clients=10):
         Client(
             dataset=d,
             groupid=f'client.{i:03d}',
-            model=FederatedSGDClassifier(n_classes=3, n_features=4),
+            model=FederatedSGDClassifier(n_classes=3, n_features=4, learning_rate="invscaling", eta0=0.1),
             server=SERVER
         )
         for i, d in zip(range(n_clients), datasets)
@@ -83,7 +84,7 @@ def loop_example(loops=10, n_clients=10):
     server = Server(
         n_clients=len(clients),
         groupid='server.001',
-        model=FederatedSGDClassifier(n_classes=3, n_features=4),
+        model=FederatedSGDClassifier(n_classes=3, n_features=4, learning_rate="invscaling", eta0=0.1),
         server=SERVER,
         max_iter=loops,
     )
@@ -110,4 +111,4 @@ if __name__ =='__main__':
     LOGGER.info('Running one step example')
     step_example()
     LOGGER.info('Running loop (10 steps) example')
-    loop_example()
+    loop_example(n_clients=3, loops=100)
