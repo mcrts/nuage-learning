@@ -5,11 +5,11 @@ import numpy as np
 from src.model import FederatedSGDClassifier
 from src.utils import get_logger
 from sklearn.datasets import load_iris
-from sklearn.utils import resample
+from sklearn.utils import resample, shuffle
 
 LOGGER = get_logger('Example many SGDs')
 
-N = 10
+N = 3
 def step_example():
     X, y = load_iris(return_X_y=True)
     X, y = resample(X, y, n_samples=N * 100)
@@ -41,13 +41,14 @@ def step_example():
         c.set_weights(weights)
 
 
-def loop_example(loops=100):
+def loop_example(loops=200):
     X, y = load_iris(return_X_y=True)
-    X, y = resample(X, y, n_samples=N * 100)
+    #X, y = resample(X, y, n_samples=N * 100)
+    X, y = shuffle(X, y, n_samples=N * 50)
     datasets = list(zip(np.split(X, N), np.split(y, N)))
 
-    server = FederatedSGDClassifier(n_classes=3, n_features=4)
-    clients = [FederatedSGDClassifier(n_classes=3, n_features=4) for _ in range(N)]
+    server = FederatedSGDClassifier(n_classes=3, n_features=4, learning_rate="invscaling", eta0=0.1)
+    clients = [FederatedSGDClassifier(n_classes=3, n_features=4, learning_rate="invscaling", eta0=0.1) for _ in range(N)]
 
     # Initialize SGDs
     for c, (Xi, yi) in zip(clients, datasets):
@@ -64,6 +65,7 @@ def loop_example(loops=100):
 
         metrics = server.aggregate_metrics(clients_metrics)
         LOGGER.info(metrics)
+        
 
         # Aggregate clients weights
         clients_weights = [c.get_weights() for c in clients]
