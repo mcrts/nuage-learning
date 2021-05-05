@@ -9,7 +9,7 @@ from confluent_kafka import Consumer
 from examples import local_example
 
 LOGGER = get_logger('Example kafka analytics')
-SERVER = 'Atlas:9092'
+SERVER = 'localhost:9092'
 
 
 def get_messages(consumer):
@@ -87,6 +87,7 @@ def analytics_local(n_clients=3, sample_size=50, loops=200, eta0=0.1, replace=Fa
 
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
     plt.show()
+    plt.savefig('analytics.png')
 
 
 if __name__ =='__main__':

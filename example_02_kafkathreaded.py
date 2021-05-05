@@ -15,7 +15,7 @@ from sklearn.utils import resample, shuffle
 
 
 LOGGER = get_logger('Example kafka thread')
-SERVER = 'Atlas:9092'
+SERVER = 'localhost:9092'
 
 def step_example(n_clients=2):
     admin = Admin(server=SERVER)
