@@ -7,6 +7,7 @@ import time
 import numpy as np
 from confluent_kafka import Consumer, Producer
 
+from src.model import EarlyStopping
 from src.utils import deserialize_payload, serialize_payload, logger
 
 
@@ -17,14 +18,41 @@ class Server:
     sendtopic = "server"
     session_time_out = 6000
 
-    def __init__(self, n_clients, groupid, model, server, max_iter=100):
-        """Instantiate the Server."""
+    def __init__(
+            self, n_clients, groupid, model, server, max_iter=100,
+            earlystop=False, es_tolerance=1e-3, es_patience=5
+        ):
+        """Instantiate the Server.
+
+        Task parameters:
+        ---------------
+        n_clients : int, number of clients participating in the training
+        groupid   : str, groupid of the Kafka consumers used by this instance
+        model     : FederatedModel, instance of the model to be trained
+        server    : str, address of the Kafka server
+
+        Training parameters:
+        -------------------
+        max_iter     : int, maximum number of training iterations to train for
+        earlystop    : bool, whether to implement an early-stopping criterion
+        es_tolerance : float, tolerance of the EarlyStoping criterion (if any)
+        es_patience  : int, patience of the EarlyStoping criterion (if any)
+        """
         self.n_clients = n_clients
         self.groupid = groupid
         self.model = model
         self.server = server
         self.max_iter = max_iter
         self.current_metrics = None
+        # Early
+        if earlystop:
+            self.early_stopping = EarlyStopping(
+                tolerance=es_tolerance,
+                patience=es_patience,
+                decreases=self.model.early_stopping_metric_decreases
+            )
+        else:
+            self.early_stopping = None
 
     def get_consumer(self, topics):
         """Set up and return a Kafka consumer for given topics."""
@@ -95,7 +123,7 @@ class Server:
             self.current_metrics = metrics
 
         epoch = payloads[0]['epoch'] + 1
-        state = 'RUN' if self.keep_running(metrics, epoch) else 'STOP'
+        state = 'RUN' if self.keep_running(epoch, metrics) else 'STOP'
         if state != 'STOP':
             weights = self.model.aggregate_weights(
                 dataset_sizes=[p['dataset_size'] for p in payloads],
@@ -103,7 +131,7 @@ class Server:
             )
         else:
             weights = self.model.get_weights()
-        
+
         payload = self.prepare_payload(
             weights,
             metrics,
@@ -116,19 +144,26 @@ class Server:
 
     def run(self):
         """Run the training loop on the server side."""
-        weights = self.model.get_weights()
-        metrics = None
         keep_running = True
         while keep_running:
             keep_running = self.run_once()
             logger.info(self.current_metrics)
 
 
-    def keep_running(self, metrics, epoch):
+    def keep_running(self, epoch, metrics):
         """Return a boolean indicating whether to keep training.
 
-        metrics : dict of aggregated validation metrics
         epoch   : int, index of the next epoch to run
+        metrics : dict of aggregated validation metrics
+                  (optionnally used for early stopping)
         """
-        # TODO: implement early stopping based on metrics monitoring.
-        return (epoch < self.max_iter)
+        output = (epoch < self.max_iter)
+        if output and (self.early_stopping is not None):
+            metric_name = self.model.early_stopping_metric
+            metric = metrics.get(metric_name, None)
+            if metric is None:
+                raise KeyError(
+                    f"Early stopping metric '{metric_name}' is missing."
+                )
+            output = self.early_stopping.keep_running(metric)
+        return output

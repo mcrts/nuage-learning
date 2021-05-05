@@ -8,6 +8,9 @@ from abc import ABCMeta, abstractmethod
 class FederatedModel(metaclass=ABCMeta):
     """Abstract class defining federated models' API."""
 
+    early_stopping_metric = NotImplemented  # children: replace with a string
+    early_stopping_metric_decreases = NotImplemented  # replace with a bool
+
     @abstractmethod
     def get_config(self):
         """Return a JSON-serializable dict enabling re-instantiation."""

@@ -13,6 +13,9 @@ from src.model import FederatedModel
 class FederatedSGDClassifier(FederatedModel):
     """Simple Gradient Descent (SGD) classifier model."""
 
+    early_stopping_metric = 'logloss'
+    early_stopping_metric_decreases = True
+
     def __init__(
             self,
             n_classes,
