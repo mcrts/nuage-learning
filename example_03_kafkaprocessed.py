@@ -15,7 +15,7 @@ from src.utils import get_logger
 
 
 LOGGER = get_logger('Example kafka process')
-SERVER = 'Atlas:9092'
+SERVER = 'localhost:9092'
 
 
 def run_client(idx, dst):
