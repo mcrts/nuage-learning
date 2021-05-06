@@ -1,15 +1,31 @@
-# Todo List
-* Make an example with multiprocessing (just to make sure it works)
-* Make an example with a kafka cloud instance (will probably need some work)
-* Package the project
-* CLI design
-* Tweak FederatedSGDClassifier 's API
+# Quickstart
+
+## Install nuage-learning
+```bash
+$ git clone https://github.com/mcrts/nuage-learning nuage-learning
+$ pip install -e nuage-learning
+```
+
+## Running the example
+* A kafka server should be running on localhost:9092
+* There should be 2 topics 'server' and 'clients'
+
+```bash
+$ python nuage-learning/example_02_kafkathreaded.py
+```
+This example train a SGDClassifier on the Iris dataset spread across 100 worker nodes for 10 loops.
 
 # Acknowledgment
 * Yannick Bouillard
 * Paul Andrey
 * Alexandre Filiot
 * Martin Courtois
+
+
+# Todo List
+* Make an example with a kafka cloud instance (will probably need some work)
+* CLI design
+* Tweak FederatedSGDClassifier 's API
 
 # Setup Kafka
 <details>
