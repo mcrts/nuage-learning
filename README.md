@@ -15,6 +15,12 @@ $ python nuage-learning/example_02_kafkathreaded.py
 ```
 This example train a SGDClassifier on the Iris dataset spread across 100 worker nodes for 10 loops.
 
+## Example results
+[example_02_kafkathreaded.py : execution log](/images/running_example.png?raw=true "execution log")
+[example_02_kafkathreaded.py : client message](/images/local_model.png?raw=true "client message")
+[example_02_kafkathreaded.py : client message](/images/global_model.png?raw=true "server message")
+[example_02_kafkathreaded.py : training analytics](/images/analytics.png?raw=true "training analytics")
+
 # Acknowledgment
 * Yannick Bouillard
 * Paul Andrey
@@ -85,8 +91,4 @@ kafka-server-start.sh /opt/kafka_2.12-2.8.0/config/server.properties
 wget https://releases.conduktor.io/linux-deb
 dpkg -i Conduktor-2.13.1.deb
 ```
-
-  ```javascript
-  console.log("I'm a code block!");
-  ```
 </details>
