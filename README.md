@@ -18,7 +18,7 @@ This example train a SGDClassifier on the Iris dataset spread across 100 worker 
 ## Example results
 * [example_02_kafkathreaded.py : execution log](/images/running_example.png?raw=true "execution log")
 * [example_02_kafkathreaded.py : client message](/images/local_model.png?raw=true "client message")
-* [example_02_kafkathreaded.py : client message](/images/global_model.png?raw=true "server message")
+* [example_02_kafkathreaded.py : server message](/images/global_model.png?raw=true "server message")
 * [example_02_kafkathreaded.py : training analytics](/images/analytics.png?raw=true "training analytics")
 
 # Acknowledgment
