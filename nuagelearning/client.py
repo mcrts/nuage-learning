@@ -1,10 +1,8 @@
 import time
 
-
 from confluent_kafka import Consumer, Producer, KafkaException
 
-
-from src.utils import deserialize_payload, serialize_payload, logger
+from nuagelearning.utils import deserialize_payload, serialize_payload, logger
 
 
 class Client:
