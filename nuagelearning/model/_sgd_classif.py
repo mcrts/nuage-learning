@@ -8,7 +8,7 @@ import numpy as np
 import sklearn
 from sklearn.linear_model import SGDClassifier
 
-from src.model import FederatedModel
+from nuagelearning.model import FederatedModel
 
 class FederatedSGDClassifier(FederatedModel):
     """Simple Gradient Descent (SGD) classifier model."""

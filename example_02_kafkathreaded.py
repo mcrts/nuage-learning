@@ -4,18 +4,18 @@ import threading
 import time
 import numpy as np
 
-from src.admin import Admin
-from src.client import Client
-from src.server import Server
-from src.model import FederatedSGDClassifier
-from src.utils import get_logger
+from nuagelearning.admin import Admin
+from nuagelearning.client import Client
+from nuagelearning.server import Server
+from nuagelearning.model import FederatedSGDClassifier
+from nuagelearning.utils import get_logger
 
 from sklearn.datasets import load_iris
 from sklearn.utils import resample
 
 
 LOGGER = get_logger('Example kafka thread')
-SERVER = 'Atlas:9092'
+SERVER = 'localhost:9092'
 
 def step_example(n_clients=2):
     admin = Admin(server=SERVER)
@@ -61,8 +61,8 @@ def step_example(n_clients=2):
 
 
 def loop_example(loops=10, n_clients=10):
-    admin = Admin(server=SERVER)
-    admin.setup_server()
+    #admin = Admin(server=SERVER)
+    #admin.setup_server()
 
     X, y = load_iris(return_X_y=True)
     X, y = resample(X, y, n_samples=n_clients * 100)
@@ -107,7 +107,7 @@ def loop_example(loops=10, n_clients=10):
 
 
 if __name__ =='__main__':
-    LOGGER.info('Running one step example')
-    step_example()
+    #LOGGER.info('Running one step example')
+    #step_example()
     LOGGER.info('Running loop (10 steps) example')
-    loop_example()
+    loop_example(loops=10, n_clients=100)

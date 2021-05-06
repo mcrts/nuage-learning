@@ -7,7 +7,7 @@ import time
 import numpy as np
 from confluent_kafka import Consumer, Producer
 
-from src.utils import deserialize_payload, serialize_payload, logger
+from nuagelearning.utils import deserialize_payload, serialize_payload, logger
 
 
 class Server:

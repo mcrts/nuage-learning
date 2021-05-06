@@ -2,7 +2,7 @@ import time
 
 from confluent_kafka.admin import AdminClient, NewTopic
 
-from src.utils import logger
+from nuagelearning.utils import logger
 
 
 class Admin:
